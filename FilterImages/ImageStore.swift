@@ -69,14 +69,28 @@ class ImageStore: ObservableObject {
     }
   }
 
-  func downloadImageOp(index: Int) {
-    let operation = NetworkImageOperation(url: images[index].url)
-    operation.completionBlock = {
-      guard let image = operation.image else { return }
-      DispatchQueue.main.async {
-        self.images[index].image = image
-      }
-    }
-    queue.addOperation(operation)
-  }
+//  func downloadImageOp(index: Int) {
+//    let operation = NetworkImageOperation(url: images[index].url)
+//    operation.completionBlock = {
+//      guard let image = operation.image else { return }
+//      DispatchQueue.main.async {
+//        self.images[index].image = image
+//      }
+//    }
+//    queue.addOperation(operation)
+//  }
+	
+	func downloadImageOp(index: Int) {
+		let downloadOp = NetworkImageOperation(url: images[index].url)
+		let tiltShiftOp = TiltShiftOperation()
+		tiltShiftOp.addDependency(downloadOp)
+		tiltShiftOp.completionBlock = {
+			guard let image = tiltShiftOp.image else { return }
+			DispatchQueue.main.async {
+				self.images[index].image = image
+			}
+		}
+		queue.addOperation(downloadOp)
+		queue.addOperation(tiltShiftOp)
+	}
 }
