@@ -39,13 +39,14 @@ final class TiltShiftOperation: Operation {
 
   private let inputImage: UIImage?
 
-  init(image: UIImage?) {
+  init(image: UIImage? = nil) {
     inputImage = image
     super.init()
   }
 
   override func main() {
-    guard let inputImage = inputImage else { return }
+		let dependencyImage = dependencies.compactMap { ($0 as? ImageDataProvider)?.image }.first
+		guard let inputImage = inputImage ?? dependencyImage else { return }
 
     guard let filter = TiltShiftFilter(image: inputImage),
       let output = filter.outputImage else {
