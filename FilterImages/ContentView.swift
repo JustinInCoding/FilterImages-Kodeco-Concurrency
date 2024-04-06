@@ -45,6 +45,9 @@ struct ContentView: View {
             .onAppear {
               store.downloadImageOp(index: image.id)
             }
+						.onDisappear {
+							store.cancelOperations(index: image.id)
+						}
         }
       }
     }

@@ -53,7 +53,7 @@ final class TiltShiftOperation: Operation {
         print("Failed to generate tilt shift image")
         return
     }
-
+		guard !isCancelled else { return }
     let fromRect = CGRect(origin: .zero, size: inputImage.size)
     guard
       let cgImage = TiltShiftOperation.context.createCGImage(output, from: fromRect),

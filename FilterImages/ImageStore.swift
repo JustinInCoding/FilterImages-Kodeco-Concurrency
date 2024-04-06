@@ -42,6 +42,7 @@ class ImageStore: ObservableObject {
   @Published var images: [DownloadedImage] = []
   var urls: [URL] = []
   private let queue = OperationQueue()
+	private var operations: [[Operation]] = [[]]
 
   func getUrls() {
     guard
@@ -67,7 +68,15 @@ class ImageStore: ObservableObject {
             image: UIImage(systemName: "questionmark.square") ?? UIImage()))
       }
     }
+		operations = Array<[Operation]>(repeating: [], count: urls.count)
   }
+	
+	func cancelOperations(index: Int) {
+		guard index < operations.count else { return }
+		for operation in operations[index] {
+			operation.cancel()
+		}
+	}
 
 //  func downloadImageOp(index: Int) {
 //    let operation = NetworkImageOperation(url: images[index].url)
@@ -92,5 +101,9 @@ class ImageStore: ObservableObject {
 		}
 		queue.addOperation(downloadOp)
 		queue.addOperation(tiltShiftOp)
+		
+		cancelOperations(index: index)
+		guard index < operations.count else { return }
+		operations[index] = [downloadOp, tiltShiftOp]
 	}
 }
